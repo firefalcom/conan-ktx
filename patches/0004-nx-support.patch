@@ -1,0 +1,74 @@
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -19,10 +19,15 @@ include(CTest)
+ include(GNUInstallDirs)
+ include(CMakeDependentOption)
+ 
+-include(cmake/mkvk.cmake)
++if(NOT NX)
++    include(cmake/mkvk.cmake)
++endif()
++
+ include(cmake/xcode.cmake)
+ 
+-include(cmake/cputypetest.cmake)
++if(NOT NX)
++    include(cmake/cputypetest.cmake)
++endif()
+ 
+ # OPTIONS
+ 
+@@ -38,9 +43,11 @@ option( KTX_FEATURE_LOADTEST_APPS "Create load tests apps that load and display
+ option( KTX_FEATURE_STATIC_LIBRARY "Create static libraries (shared otherwise)" ${LIB_TYPE_DEFAULT} )
+ option( KTX_FEATURE_TESTS "Create unit tests" ON )
+ 
+-set_target_processor_type(CPU_ARCHITECTURE)
+-if(CPU_ARCHITECTURE STREQUAL x86_64 OR CPU_ARCHITECTURE STREQUAL x86)
+-    option( BASISU_SUPPORT_SSE "Compile with SSE support so applications can choose to use it" ON )
++if(NOT NX)
++    set_target_processor_type(CPU_ARCHITECTURE)
++    if(CPU_ARCHITECTURE STREQUAL x86_64 OR CPU_ARCHITECTURE STREQUAL x86)
++        option( BASISU_SUPPORT_SSE "Compile with SSE support so applications can choose to use it" ON )
++    endif()
+ endif()
+ 
+ set(VULKAN_INSTALL_DIR "" CACHE PATH "Path to installation of Vulkan SDK (obtainable from https://vulkan.lunarg.com/sdk/home )")
+@@ -78,7 +85,7 @@ if(UNIX AND NOT APPLE AND NOT EMSCRIPTEN AND NOT ANDROID)
+     set(LINUX TRUE)
+ endif()
+ 
+-if(EMSCRIPTEN)
++if(EMSCRIPTEN OR NX)
+     set( KTX_FEATURE_VULKAN OFF )
+ endif()
+ 
+@@ -139,9 +146,9 @@ set(KTX_MAIN_SRC
+     lib/filestream.h
+     lib/formatsize.h
+     lib/gl_format.h
+-    lib/gl_funcs.c
++    # lib/gl_funcs.c
+     lib/gl_funcs.h
+-    lib/glloader.c
++    # lib/glloader.c
+     lib/hashlist.c
+     lib/info.c
+     lib/ktxint.h
+--- a/lib/info.c
++++ b/lib/info.c
+@@ -95,6 +95,7 @@ printKVData(ktx_uint8_t* pKvd, ktx_uint32_t kvdLen)
+ void
+ printIdentifier(const ktx_uint8_t identifier[12])
+ {
++#ifndef __NX__
+     // Convert identifier for better display.
+     uint32_t idlen = 0;
+ 	char u8identifier[30];
+@@ -133,6 +134,7 @@ printIdentifier(const ktx_uint8_t identifier[12])
+ 	    SetConsoleOutputCP(CP_UTF8);
+ #endif
+ 	fprintf(stdout, "identifier: %.*s\n", idlen, u8identifier);
++#endif
+ }
+ 
+ /*===========================================================*
