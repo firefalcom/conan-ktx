@@ -1,0 +1,11 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index ccf4af61..ac775460 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -358 +357,0 @@ set(KTX_MAIN_SRC
+-    lib/basisu/zstd/zstd.c
+@@ -466,0 +466,4 @@ add_library( ktx_read ${LIB_TYPE}
++find_package(zstd REQUIRED CONFIG)
++target_link_libraries(ktx PRIVATE $<IF:$<TARGET_EXISTS:zstd::libzstd_shared>,zstd::libzstd_shared,zstd::libzstd_static>)
++target_link_libraries(ktx_read PRIVATE $<IF:$<TARGET_EXISTS:zstd::libzstd_shared>,zstd::libzstd_shared,zstd::libzstd_static>)
++
