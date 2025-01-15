@@ -1,0 +1,29 @@
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -511,7 +511,7 @@ macro(common_libktx_settings target enable_write library_type)
+     )
+
+     # C/C++ Standard
+-    target_compile_features(${target} PUBLIC c_std_99 cxx_std_11)
++    target_compile_features(${target} PUBLIC c_std_11 cxx_std_11)
+
+     # Compiler Warning Flags
+     if(EMSCRIPTEN)
+@@ -1093,9 +1093,14 @@ if(KTX_FEATURE_DOC)
+     include(cmake/docs.cmake)
+ endif()
+
+-set(KTX_INSTALL_TARGETS ktx)
+-if(KTX_FEATURE_STATIC_LIBRARY AND NOT APPLE)
+-    list(APPEND KTX_INSTALL_TARGETS ${ASTCENC_LIB_TARGET})
++set_source_files_properties(lib/info.c PROPERTIES COMPILE_FLAGS "-std=gnu11")
++if(KTX_FEATURE_TOOLS)
++    set(KTX_INSTALL_TARGETS ktx)
++    if(KTX_FEATURE_STATIC_LIBRARY AND NOT APPLE)
++        list(APPEND KTX_INSTALL_TARGETS ${ASTCENC_LIB_TARGET})
++    endif()
++else()
++    set(KTX_INSTALL_TARGETS ktx_read)
+ endif()
+
+ # Install
